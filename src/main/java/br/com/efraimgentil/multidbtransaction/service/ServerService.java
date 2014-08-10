@@ -27,7 +27,7 @@ public class ServerService {
     Connection postgres = postgresDS.getConnection();
     
     mysql.prepareStatement("INSERT INTO teste(nome) VALUES('TESTE WITH SERVICE')").executeUpdate();
-    postgres.prepareStatement("INSERT INTO server (name , host) VALUES ( 'TEST WITH SERVICE' , '10.0.0.1')").executeUpdate();
+    postgres.prepareStatement("INSERT INTO server (name) VALUES ( 'TEST WITH SERVICE' )").executeUpdate();
     
     throw new RuntimeException(); 
   }

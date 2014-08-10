@@ -6,7 +6,13 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
         http://www.springframework.org/schema/tx  
         http://www.springframework.org/schema/tx/spring-tx.xsd">
-
+    
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+  <property name="location" value="classpath:db.properties" />
+  <property name="ignoreResourceNotFound" value="true"/>
+</bean>  
+    
+    
   <context:annotation-config   />
   <context:component-scan base-package="br.com.efraimgentil.multidbtransaction"  />   
   <tx:jta-transaction-manager   /> 
@@ -16,7 +22,6 @@
   class="com.atomikos.icatch.config.UserTransactionServiceImp"  
   init-method="init" destroy-method="shutdownForce"> 
     <constructor-arg> 
-        <!-- IMPORTANT: specify all Atomikos properties here --> 
         <props> 
             <prop key="com.atomikos.icatch.console_file_limit">0</prop>
             <prop key="com.atomikos.icatch.console_log_level">WARN</prop>  
@@ -25,11 +30,6 @@
             <prop key="com.atomikos.icatch.log_base_dir">target</prop>
         </props> 
     </constructor-arg> 
-<!--     <property name="initialLogAdministrators">  -->
-<!--         <list>  -->
-<!--             <ref bean="localLogAdministrator"/>  -->
-<!--         </list>  -->
-<!--     </property>  -->
 </bean> 
   
   <bean id="transactionManager"  
@@ -40,8 +40,6 @@
       
   <bean id="AtomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"
     init-method="init" destroy-method="close" depends-on="userTransactionService">
-    <!-- when close is called, should we force transactions to terminate 
-      or not? -->
     <property name="forceShutdown" value="false" />
   </bean>
 
@@ -52,17 +50,17 @@
   <bean id="mysqlDS" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
     <property name="uniqueResourceName" value="mysqlDS" />
     <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-    <property name="url" value="jdbc:mysql://localhost:3306/teste" />
-    <property name="user" value="root" />
-    <property name="password" value="root" />
+    <property name="url" value="jdbc:mysql://${my.host}:${my.port}/${my.database}" />
+    <property name="user" value="${my.username}" />
+    <property name="password" value="${my.password}" />
   </bean>
 
   <bean id="postgresDS" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
     <property name="uniqueResourceName" value="postgresDS" />
     <property name="driverClassName" value="org.postgresql.Driver" />
-    <property name="url" value="jdbc:postgresql://localhost:5432/flexuc" />
-    <property name="user" value="postgres" />
-    <property name="password" value="" />
+    <property name="url" value="jdbc:postgresql://${pg.host}:${pg.port}/${pg.database}" />
+    <property name="user" value="${pg.username}" />
+    <property name="password" value="${pg.password}" />
   </bean>
 
 
